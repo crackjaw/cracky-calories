@@ -1,0 +1,52 @@
+name: CI Build, Test, and Sonar Analysis
+
+on:
+  push:
+    branches: [ main, develop ] # Use your actual primary branches here
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      # --- Setup Python Environment ---
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+
+      # --- Dependency Installation ---
+      - name: Install dependencies and activate venv
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install django # Add other required packages here!
+          # IMPORTANT: If a requirements.txt is added, this line must be used instead:
+          # pip install -r requirements.txt
+
+      # --- Application Setup & Testing ---
+      - name: Run Migrations and Collect Static Files
+        run: |
+          python manage.py makemigrations tracker
+          python manage.py migrate
+          python manage.py collectstatic --noinput
+
+      - name: Run Unit Tests
+        run: |
+          ./venv/bin/python manage.py test tracker
+
+      # --- SonarCloud Analysis ---
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v2.1
+        with:
+          # These values should match your SonarCloud project settings
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }}
+          token: ${{ secrets.SONAR_TOKEN }}
+
+      # --- Artifact Creation (Packaging) ---
+      - name: Create Package Artifact
+        run: |
+          echo "Packaging application..."
+          tar -czvf build-$(date +'%Y%m%d').tar.gz calories_app

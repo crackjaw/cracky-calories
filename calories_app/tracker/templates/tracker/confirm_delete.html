@@ -1,0 +1,15 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="card border-danger">
+    <div class="card-body text-center">
+        <h5 class="card-title text-danger">Confirm Deletion</h5>
+        <p class="card-text">Are you sure you want to delete the entry for <strong>{{ entry.food_name }}</strong> ({{ entry.calories }} kcal) on {{ entry.date|date:"Y-m-d" }}?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger me-2">Yes, Delete</button>
+            <a href="{% url 'index' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

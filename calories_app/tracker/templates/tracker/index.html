@@ -1,0 +1,71 @@
+{% extends 'tracker/base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Form Column -->
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">Add Calorie Entry</div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100">Add Entry</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Daily Totals</div>
+            <ul class="list-group list-group-flush">
+                {% for item in daily_totals %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ item.date|date:"Y-m-d" }}
+                    <span class="badge bg-primary rounded-pill">{{ item.total }} kcal</span>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">No totals recorded yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Entries Column -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">Recent Entries</div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Food</th>
+                            <th>Calories</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in entries %}
+                        <tr>
+                            <td>{{ entry.date|date:"Y-m-d" }}</td>
+                            <td>{{ entry.food_name }}</td>
+                            <td>{{ entry.calories }} kcal</td>
+                            <td>
+                                <form method="post" action="{% url 'delete_entry' entry.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">No entries found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
