@@ -29,13 +29,13 @@ jobs:
       # --- Application Setup & Testing ---
       - name: Run Migrations and Collect Static Files
         run: |
-          python manage.py makemigrations tracker
-          python manage.py migrate
-          python manage.py collectstatic --noinput
+          python calories_app/manage.py makemigrations tracker
+          python calories_app/manage.py migrate
+          python calories_app/manage.py collectstatic --noinput
 
       - name: Run Unit Tests
         run: |
-          ./venv/bin/python manage.py test tracker
+          ./venv/bin/python calories_app/manage.py test tracker
 
       # --- SonarCloud Analysis ---
       - name: SonarCloud Scan
