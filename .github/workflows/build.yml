@@ -28,17 +28,15 @@ jobs:
       # --- Application Setup & Testing (Consolidated) ---
       - name: Run Database Setup and Tests
         run: |
-          # Setting the DJANGO_SETTINGS_MODULE environment variable before running commands is crucial for CI context setup.
-          export DJANGO_SETTINGS_MODULE=core.settings
-          ./venv/bin/python calories_app/manage.py makemigrations tracker
-          ./venv/bin/python calories_app/manage.py migrate
-          ./venv/bin/python calories_app/manage.py collectstatic --noinput
+          # Use 'python -m' to force execution via module loading, bypassing shell sourcing issues for reliability
+          python -m django.core.management makemigrations tracker
+          python -m django.core.management migrate
+          python -m django.core.management collectstatic --noinput
 
       - name: Run Unit Tests
         run: |
-          # Test command also needs the explicit settings module set
-          export DJANGO_SETTINGS_MODULE=core.settings
-          ./venv/bin/python calories_app/manage.py test tracker
+          # The test command must also use the module runner
+          python -m django.core.management test tracker
 
       # --- SonarCloud Analysis ---
       - name: SonarCloud Scan
