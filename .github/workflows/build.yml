@@ -28,14 +28,15 @@ jobs:
       # --- Application Setup & Testing (Consolidated) ---
       - name: Run Database Setup and Tests
         run: |
-          ./venv/bin/python calories_app/manage.py makemigrations tracker
-          ./venv/bin/python calories_app/manage.py migrate
-          ./venv/bin/python calories_app/manage.py collectstatic --noinput
+          # Use the django-admin executable directly for reliability
+          ./venv/bin/django-admin makemigrations tracker
+          ./venv/bin/django-admin migrate
+          ./venv/bin/django-admin collectstatic --noinput
 
       - name: Run Unit Tests
         run: |
-          # The explicit path guarantees execution within the venv context
-          ./venv/bin/python calories_app/manage.py test tracker
+          # Execute tests using the django-admin runner for consistency
+          ./venv/bin/django-admin test tracker
 
       # --- SonarCloud Analysis ---
       - name: SonarCloud Scan
