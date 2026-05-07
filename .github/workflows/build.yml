@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.14'
 
-      # --- Dependency Installation ---
+      # --- Dependency Installation (RETRY) ---
       - name: Install dependencies
         run: |
           python -m venv venv
@@ -28,15 +28,15 @@ jobs:
       # --- Application Setup & Testing (Consolidated) ---
       - name: Run Database Setup and Tests
         run: |
-          # Use 'python -m' to force execution via module loading, bypassing shell sourcing issues for reliability
-          python -m django.core.management makemigrations tracker
-          python -m django.core.management migrate
-          python -m django.core.management collectstatic --noinput
+          # Use the django-admin command directly via its executable path for maximum compatibility
+          ./venv/bin/django-admin makemigrations tracker
+          ./venv/bin/django-admin migrate
+          ./venv/bin/django-admin collectstatic --noinput
 
       - name: Run Unit Tests
         run: |
-          # The test command must also use the module runner
-          python -m django.core.management test tracker
+          # Execute tests using the django-admin executable directly
+          ./venv/bin/django-admin test tracker
 
       # --- SonarCloud Analysis ---
       - name: SonarCloud Scan
