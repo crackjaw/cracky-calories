@@ -25,18 +25,14 @@ jobs:
           # IMPORTANT: If a requirements.txt is added, this line must be used instead:
           # pip install -r requirements.txt
 
-      # --- Application Setup & Testing (Consolidated) ---
-      - name: Run Database Setup and Tests
+      # --- Application Setup, Testing, and Analysis (Consolidated) ---
+      - name: Run Full Stack Setup and Tests
         run: |
-          # Use the django-admin executable directly for reliability
-          ./venv/bin/django-admin makemigrations tracker
-          ./venv/bin/django-admin migrate
-          ./venv/bin/django-admin collectstatic --noinput
-
-      - name: Run Unit Tests
-        run: |
-          # Execute tests using the django-admin runner for consistency
-          ./venv/bin/django-admin test tracker
+          # All commands executed sequentially in one shell context to ensure venv is active for all steps
+          source venv/bin/activate
+          django-admin makemigrations tracker
+          django-admin migrate
+          django-admin collectstatic --noinput
 
       # --- SonarCloud Analysis ---
       - name: SonarCloud Scan
