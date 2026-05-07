@@ -18,24 +18,25 @@ jobs:
           python-version: '3.14'
 
       # --- Dependency Installation ---
-      - name: Install dependencies
+      - name: Install dependencies and activate venv
         run: |
           python -m venv venv
-          # The source venv/bin/activate is removed as it fails to persist the environment state in CI runners.
           pip install django # Add other required packages here!
           # IMPORTANT: If a requirements.txt is added, this line must be used instead:
           # pip install -r requirements.txt
 
-      # --- Application Setup & Testing ---
-      - name: Run Migrations and Collect Static Files
+      # --- Application Setup & Testing (Consolidated) ---
+      - name: Run Database Setup and Tests
         run: |
+          source venv/bin/activate
           python calories_app/manage.py makemigrations tracker
           python calories_app/manage.py migrate
-          ./venv/bin/python calories_app/manage.py collectstatic --noinput
+          python calories_app/manage.py collectstatic --noinput
 
       - name: Run Unit Tests
         run: |
-          ./venv/bin/python calories_app/manage.py test tracker
+          # Since the source venv/bin/activate is run in this step, we don't need to re-source it here
+          python calories_app/manage.py test tracker
 
       # --- SonarCloud Analysis ---
       - name: SonarCloud Scan
